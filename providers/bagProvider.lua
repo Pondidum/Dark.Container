@@ -1,6 +1,7 @@
 local addon, ns = ...
 
 local layout = ns.lib.layout
+
 local provider = ns.provider
 
 local bagProvider = provider:extend({
@@ -22,11 +23,12 @@ local bagProvider = provider:extend({
 		self.frames[bagID] = frame
 	end,
 
-	add = function(self, bagID, slotID)
+	add = function(self, bagID, slotID, frame)
 
-		local frame = self.frames[bagID]
+		local container = self.frames[bagID]
 
-		frame:addChild( >>> frame <<< )
+		container:addChild(frame)
+
 	end,
 
 })
