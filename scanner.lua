@@ -17,7 +17,7 @@ local scanner = class:extend({
 
 				local provider = self:getProvider(bagID, slotID)
 
-				provider:getOrCreateContainer(bagID, slotID)
+				provider:createContainer(bagID, slotID)
 				provider:add(bagID, slotID)
 
 			end

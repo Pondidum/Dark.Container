@@ -8,6 +8,7 @@
 config.lua
 initialise.lua
 
+provider.lua
 scanner.lua
 
 run.lua
