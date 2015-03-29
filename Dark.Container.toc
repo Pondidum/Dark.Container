@@ -8,6 +8,7 @@
 config.lua
 initialise.lua
 
+frameMap.lua
 provider.lua
 scanner.lua
 
