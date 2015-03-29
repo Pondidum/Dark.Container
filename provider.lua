@@ -4,6 +4,10 @@ local class = ns.lib.class
 
 local provider = class:extend({
 
+	ctor = function(self, parentContainer)
+		self.parent = parentContainer
+	end,
+
 	canHandle = function(self, bagID, slotID)
 		return false
 	end,
