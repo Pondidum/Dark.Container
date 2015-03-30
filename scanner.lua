@@ -14,7 +14,7 @@ local scanner = class:extend({
 
 		for i, bagID in ipairs(self.containerIDs) do
 
-			for slot = 1, GetContainerNumSlots(bagID) do
+			for slotID = 1, GetContainerNumSlots(bagID) do
 
 				local provider = self:getProvider(bagID, slotID)
 				local itemFrame = frameMap[bagID][slotID]
