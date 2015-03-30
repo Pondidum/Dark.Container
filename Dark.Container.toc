@@ -12,4 +12,6 @@ frameMap.lua
 provider.lua
 scanner.lua
 
+providers\bagProvider.lua
+
 run.lua

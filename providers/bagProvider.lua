@@ -6,28 +6,39 @@ local provider = ns.provider
 
 local bagProvider = provider:extend({
 
+	ctor = function(self, parentContainer)
+		self:base():ctor(parentContainer)
+		self.engines = {}
+	end,
+
 	canHandle = function(self, bagID, slotID)
 		return true
 	end,
 
 	createContainer = function(self, bagID, slotID)
 
-		if self.frames[bagID] then
+		if self.engines[bagID] then
 			return
 		end
+
 		local frame = CreateFrame("Frame", "DarkBagProvider"..bagID, self.parent)
-		layout:init(frame, {
-			--?
+		local engine = layout:new(frame, {
+			layout = "horizontal",
+			origin = "BOTTOMLEFT",
+			itemSize = 24,
+			itemSpacing = 2,
+			autosize = "x"
 		})
 
-		self.frames[bagID] = frame
+		self.engines[bagID] = engine
 	end,
 
 	add = function(self, bagID, slotID, frame)
 
-		local container = self.frames[bagID]
+		local engine = self.engines[bagID]
 
-		container:addChild(frame)
+		engine:addChild(frame)
+		engine:performLayout()
 
 	end,
 
