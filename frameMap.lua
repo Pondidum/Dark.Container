@@ -2,7 +2,7 @@ local addon, ns = ...
 
 local map = {}
 
-for bagID = 1, NUM_CONTAINER_FRAMES do
+for bagID = 0, NUM_CONTAINER_FRAMES do
 
 	map[bagID] = {}
 
