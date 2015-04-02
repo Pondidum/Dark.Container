@@ -1,11 +1,11 @@
 local addon, ns = ...
 
 local class = ns.lib.class
-local frameMap = ns.frameMap
 
 local scanner = class:extend({
 
-	ctor = function(self, providers, containerIDs)
+	ctor = function(self, frameMap, providers, containerIDs)
+		self.frameMap = frameMap
 		self.providers = providers
 		self.containerIDs = containerIDs
 	end,
@@ -17,7 +17,7 @@ local scanner = class:extend({
 			for slotID = 1, GetContainerNumSlots(bagID) do
 
 				local provider = self:getProvider(bagID, slotID)
-				local itemFrame = frameMap[bagID][slotID]
+				local itemFrame = self.frameMap:getFrame(bagID, slotID)
 
 				provider:createContainer(bagID, slotID)
 				provider:add(bagID, slotID, itemFrame)
