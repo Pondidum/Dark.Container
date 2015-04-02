@@ -22,6 +22,7 @@ local scanner = class:extend({
 				provider:createContainer(bagID, slotID)
 				provider:add(bagID, slotID, itemFrame)
 
+				itemFrame.ClearAllPoints = function() end
 				itemFrame.SetPoint = function() end
 			end
 
