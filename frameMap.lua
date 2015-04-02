@@ -12,7 +12,7 @@ local frameMap = class:extend({
 
 	fillNames = function(self)
 
-		for bagID = 0, NUM_CONTAINER_FRAMES do
+		for bagID = 1, NUM_CONTAINER_FRAMES do
 
 			local bag = {}
 
@@ -43,8 +43,9 @@ local frameMap = class:extend({
 		--  Frame for slotID 1 = 28
 		--  Frame for slotID 2 = 27
 
+		--this +1 is due to bagFrame being 1 in the ui and 0 in api calls
+		local framesAvailable = self.frames[bagID + 1]
 		local offset = GetContainerNumSlots(bagID) + 1
-		local framesAvailable = self.frames[bagID]
 
 		return framesAvailable[offset - slotID]
 
