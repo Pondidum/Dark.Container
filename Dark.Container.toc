@@ -11,6 +11,7 @@ initialise.lua
 frameMap.lua
 provider.lua
 scanner.lua
+style.lua
 
 providers\bagProvider.lua
 

@@ -7,6 +7,7 @@ ns.lib = {
 	events = dark.events,
 	mixins = dark.mixins,
 	layout = dark.layoutEngine,
+	style = dark.style,
 }
 
 ns.allProviders = {}
