@@ -52,6 +52,16 @@ local frameMap = class:extend({
 
 	end,
 
+	forEach = function(self, action)
+
+		for bagID, slots in pairs(self.frames) do
+			for slotID, frame in pairs(slots) do
+				action(bagID, slotID, frame)
+			end
+		end
+
+	end,
+
 })
 
 ns.frameMap = frameMap
