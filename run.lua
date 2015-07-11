@@ -26,12 +26,17 @@ local run = function()
 		style:frame(frame)
 
 		local engine = layout:new(frame, {
-				layout = "horizontal",
-				origin = "TOPLEFT",
-				itemSize = 24,
-				itemSpacing = 2,
-				autosize = "y",
-				wrap = true
+			layout = "horizontal",
+			origin = "TOPLEFT",
+			itemSize = 24,
+			itemSpacing = 2,
+			autosize = "y",
+			wrap = true,
+
+			setPoint = function(child, ...)
+				child:OriginalClear()
+				child:OriginalSetPoint(...)
+			end,
 		})
 
 		frame.add = function(self, other)
@@ -56,7 +61,11 @@ local run = function()
 			local cellName = string.format("ContainerFrame%dItem%d", bagID+1, bagTotal +1 - slotID)
 			local cell = _G[cellName]
 
-			cell:ClearAllPoints()
+			cell.OriginalClear = cell.ClearAllPoints
+			cell.OriginalSetPoint = cell.SetPoint
+
+			cell.ClearAllPoints = function() end
+			cell.SetPoint = function() end
 
 			createGroup(bagID):add(cell)
 
