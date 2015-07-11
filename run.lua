@@ -17,10 +17,6 @@ local run = function()
 
 	local createGroup = function(bagID)
 
-		if groups[bagID] then
-			return groups[bagID]
-		end
-
 		local frame = CreateFrame("Frame", "DarkBagProvider"..bagID, UIParent)
 		frame:SetWidth(390)
 		style:frame(frame)
@@ -47,9 +43,28 @@ local run = function()
 			engine:performLayout()
 		end
 
-		groups[bagID] = frame
-
 		return frame
+
+	end
+
+	local getGroup = function(bagID, slotID)
+
+		local texture, count, locked, quality, readable, lootable, link = GetContainerItemInfo(bagID, slotID)
+
+		if link then
+			local name = GetItemInfo(link)
+
+			if name == "Hyper Augment Rune" then
+
+				groups["Hyper"] = groups["Hyper"] or createGroup("Hyper")
+				return groups["Hyper"]
+
+			end
+		end
+
+		groups[bagID] = groups[bagID] or createGroup(bagID)
+
+		return groups[bagID]
 
 	end
 
@@ -67,7 +82,7 @@ local run = function()
 			cell.ClearAllPoints = function() end
 			cell.SetPoint = function() end
 
-			createGroup(bagID):add(cell)
+			getGroup(bagID, slotID):add(cell)
 
 		end
 
@@ -77,7 +92,9 @@ local run = function()
 
 	for k, f in pairs(groups) do
 
-		if k == 0 then
+		if type(k) == "string" then
+			f:SetPoint("BOTTOM", groups[0], "TOP", 0, 5)
+		elseif k == 0 then
 			f:SetPoint("CENTER")
 		else
 			f:SetPoint("TOP", groups[k-1], "BOTTOM", 0, -5)
