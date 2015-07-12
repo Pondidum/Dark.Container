@@ -29,6 +29,10 @@ local createGroup = function(bagID)
 		engine:addChild(other)
 	end
 
+	frame.clear = function(self)
+		engine:clearChildren()
+	end
+
 	frame.layout = function(self)
 		engine:performLayout()
 	end
@@ -88,34 +92,37 @@ table.insert(builders, {
 
 
 
-local run = function()
+local groups = {}
+local groupLayout = {}
 
-	local containerIDs = {}
+local containerIDs = {}
 
-	for i = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
-		table.insert(containerIDs, i)
+for i = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
+	table.insert(containerIDs, i)
+end
+
+local getGroup = function(bagID, slotID)
+
+	local builder = builders:get(bagID, slotID)
+	local key = builder.key(bagID, slotID)
+
+	if groups[key] then
+		return groups[key]
 	end
 
-	local groups = {}
-	local groupLayout = {}
+	local group = builder.create(bagID, slotID)
 
+	builder.addTo(groupLayout, group)
+	groups[key] = group
 
-	local getGroup = function(bagID, slotID)
+	return group
 
-		local builder = builders:get(bagID, slotID)
-		local key = builder.key(bagID, slotID)
+end
 
-		if groups[key] then
-			return groups[key]
-		end
+local run = function()
 
-		local group = builder.create(bagID, slotID)
-
-		builder.addTo(groupLayout, group)
-		groups[key] = group
-
-		return group
-
+	for k, group in pairs(groups) do
+		group:clear()
 	end
 
 	for i, bagID in ipairs(containerIDs) do
@@ -126,8 +133,8 @@ local run = function()
 			local cellName = string.format("ContainerFrame%dItem%d", bagID+1, bagTotal +1 - slotID)
 			local cell = _G[cellName]
 
-			cell.OriginalClear = cell.ClearAllPoints
-			cell.OriginalSetPoint = cell.SetPoint
+			cell.OriginalClear = cell.OriginalClear or cell.ClearAllPoints
+			cell.OriginalSetPoint = cell.OriginalSetPoint or cell.SetPoint
 
 			cell.ClearAllPoints = function() end
 			cell.SetPoint = function() end
@@ -137,7 +144,6 @@ local run = function()
 		end
 
 	end
-
 
 	local prev
 
@@ -158,10 +164,7 @@ local run = function()
 end
 
 local runOnce = function()
-
 	run()
-	run =function() end
-
 end
 
 hooksecurefunc("ToggleAllBags", runOnce)
