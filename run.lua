@@ -65,7 +65,10 @@ table.insert(builders, {
 	end,
 	create = function(bagID, slotID)
 		return createGroup("Hyper")
-	end
+	end,
+	addTo = function(collection, frame)
+		table.insert(collection, 1, frame)
+	end,
 })
 
 table.insert(builders, {
@@ -77,6 +80,9 @@ table.insert(builders, {
 	end,
 	create = function(bagID, slotID)
 		return createGroup(bagID)
+	end,
+	addTo = function(collection, frame)
+		table.insert(collection, frame)
 	end,
 })
 
@@ -105,7 +111,7 @@ local run = function()
 
 		local group = builder.create(bagID, slotID)
 
-		table.insert(groupLayout, group)
+		builder.addTo(groupLayout, group)
 		groups[key] = group
 
 		return group
