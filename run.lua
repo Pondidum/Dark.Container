@@ -5,9 +5,86 @@ local layout = Darker.layoutEngine
 local style = Darker.style
 
 
+local createGroup = function(bagID)
+
+	local frame = CreateFrame("Frame", "DarkBagProvider"..bagID, UIParent)
+	frame:SetWidth(390)
+	style:frame(frame)
+
+	local engine = layout:new(frame, {
+		layout = "horizontal",
+		origin = "TOPLEFT",
+		itemSize = 24,
+		itemSpacing = 2,
+		autosize = "y",
+		wrap = true,
+
+		setPoint = function(child, ...)
+			child:OriginalClear()
+			child:OriginalSetPoint(...)
+		end,
+	})
+
+	frame.add = function(self, other)
+		engine:addChild(other)
+	end
+
+	frame.layout = function(self)
+		engine:performLayout()
+	end
+
+	return frame
+
+end
+
+local builders = {
+	get = function(self, bagID, slotID)
+		for i, set in ipairs(self) do
+			if set.condition(bagID, slotID) then
+				return set
+			end
+		end
+	end,
+}
+
+table.insert(builders, {
+	key = function(bagID, slotID)
+		return "Hyper"
+	end,
+	condition = function(bagID, slotID)
+
+		local texture, count, locked, quality, readable, lootable, link = GetContainerItemInfo(bagID, slotID)
+
+		if not link then
+			return false
+		end
+
+		local name = GetItemInfo(link)
+
+		return name == "Hyper Augment Rune"
+	end,
+	create = function(bagID, slotID)
+		return createGroup("Hyper")
+	end
+})
+
+table.insert(builders, {
+	key = function(bagID, slotID)
+		return bagID
+	end,
+	condition = function(bagID, slotID)
+		return true
+	end,
+	create = function(bagID, slotID)
+		return createGroup(bagID)
+	end,
+})
+
+
+
 local run = function()
 
-	local containerIDs = {B}
+	local containerIDs = {}
 
 	for i = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
 		table.insert(containerIDs, i)
@@ -16,63 +93,22 @@ local run = function()
 	local groups = {}
 	local groupLayout = {}
 
-	local createGroup = function(bagID)
-
-		local frame = CreateFrame("Frame", "DarkBagProvider"..bagID, UIParent)
-		frame:SetWidth(390)
-		style:frame(frame)
-
-		local engine = layout:new(frame, {
-			layout = "horizontal",
-			origin = "TOPLEFT",
-			itemSize = 24,
-			itemSpacing = 2,
-			autosize = "y",
-			wrap = true,
-
-			setPoint = function(child, ...)
-				child:OriginalClear()
-				child:OriginalSetPoint(...)
-			end,
-		})
-
-		frame.add = function(self, other)
-			engine:addChild(other)
-		end
-
-		frame.layout = function(self)
-			engine:performLayout()
-		end
-
-		return frame
-
-	end
 
 	local getGroup = function(bagID, slotID)
 
-		local texture, count, locked, quality, readable, lootable, link = GetContainerItemInfo(bagID, slotID)
+		local builder = builders:get(bagID, slotID)
+		local key = builder.key(bagID, slotID)
 
-		if link then
-			local name = GetItemInfo(link)
-
-			if name == "Hyper Augment Rune" then
-
-				if not groups["Hyper"] then
-					groups["Hyper"] = createGroup("Hyper")
-					table.insert(groupLayout, 1, groups["Hyper"])
-				end
-
-				return groups["Hyper"]
-
-			end
+		if groups[key] then
+			return groups[key]
 		end
 
-		if not groups[bagID] then
-			groups[bagID] = createGroup(bagID)
-			table.insert(groupLayout, groups[bagID])
-		end
+		local group = builder.create(bagID, slotID)
 
-		return groups[bagID]
+		table.insert(groupLayout, group)
+		groups[key] = group
+
+		return group
 
 	end
 
