@@ -14,6 +14,7 @@ local run = function()
 	end
 
 	local groups = {}
+	local groupLayout = {}
 
 	local createGroup = function(bagID)
 
@@ -56,13 +57,20 @@ local run = function()
 
 			if name == "Hyper Augment Rune" then
 
-				groups["Hyper"] = groups["Hyper"] or createGroup("Hyper")
+				if not groups["Hyper"] then
+					groups["Hyper"] = createGroup("Hyper")
+					table.insert(groupLayout, 1, groups["Hyper"])
+				end
+
 				return groups["Hyper"]
 
 			end
 		end
 
-		groups[bagID] = groups[bagID] or createGroup(bagID)
+		if not groups[bagID] then
+			groups[bagID] = createGroup(bagID)
+			table.insert(groupLayout, groups[bagID])
+		end
 
 		return groups[bagID]
 
@@ -89,16 +97,17 @@ local run = function()
 	end
 
 
+	local prev
 
-	for k, f in pairs(groups) do
+	for i, f in ipairs(groupLayout) do
 
-		if type(k) == "string" then
-			f:SetPoint("BOTTOM", groups[0], "TOP", 0, 5)
-		elseif k == 0 then
+		if not prev then
 			f:SetPoint("CENTER")
 		else
-			f:SetPoint("TOP", groups[k-1], "BOTTOM", 0, -5)
+			f:SetPoint("TOP", prev, "BOTTOM", 0, -5)
 		end
+
+		prev = f
 
 		f:layout()
 
