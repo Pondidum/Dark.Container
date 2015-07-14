@@ -1,61 +1,10 @@
 local addon, ns = ...
 
-
-local layout = Darker.layoutEngine
-local style = Darker.style
-
-
-local createGroup = function(bagID)
-
-	local frame = CreateFrame("Frame", "DarkBagProvider"..bagID, UIParent)
-	frame:SetWidth(390)
-	style:frame(frame)
-
-	local engine = layout:new(frame, {
-		layout = "horizontal",
-		origin = "TOPLEFT",
-		itemSize = 24,
-		itemSpacing = 2,
-		autosize = "y",
-		wrap = true,
-
-		setPoint = function(child, ...)
-			child:OriginalClear()
-			child:OriginalSetPoint(...)
-		end,
-	})
-
-	frame.add = function(self, other)
-		engine:addChild(other)
-	end
-
-	frame.clear = function(self)
-		engine:clearChildren()
-	end
-
-	frame.layout = function(self)
-		engine:performLayout()
-	end
-
-	return frame
-
-end
-
-local builders = {
-	get = function(self, bagID, slotID)
-		for i, set in ipairs(self) do
-			if set.condition(bagID, slotID) then
-				return set
-			end
-		end
-	end,
-}
-
-table.insert(builders, {
-	key = function(bagID, slotID)
+ns.builders:add({
+	key = function(self, bagID, slotID)
 		return "Hyper"
 	end,
-	condition = function(bagID, slotID)
+	condition = function(self, bagID, slotID)
 
 		local texture, count, locked, quality, readable, lootable, link = GetContainerItemInfo(bagID, slotID)
 
@@ -67,30 +16,16 @@ table.insert(builders, {
 
 		return name == "Hyper Augment Rune"
 	end,
-	create = function(bagID, slotID)
-		return createGroup("Hyper")
+	create = function(self, bagID, slotID)
+		return self:createGroup("Hyper")
 	end,
-	addTo = function(collection, frame)
+	addTo = function(self, collection, frame)
 		table.insert(collection, 1, frame)
 	end,
+
 })
 
-table.insert(builders, {
-	key = function(bagID, slotID)
-		return bagID
-	end,
-	condition = function(bagID, slotID)
-		return true
-	end,
-	create = function(bagID, slotID)
-		return createGroup(bagID)
-	end,
-	addTo = function(collection, frame)
-		table.insert(collection, frame)
-	end,
-})
-
-
+ns.builders:add({})
 
 local groups = {}
 local groupLayout = {}
@@ -103,16 +38,16 @@ end
 
 local getGroup = function(bagID, slotID)
 
-	local builder = builders:get(bagID, slotID)
-	local key = builder.key(bagID, slotID)
+	local builder = ns.builders:get(bagID, slotID)
+	local key = builder:key(bagID, slotID)
 
 	if groups[key] then
 		return groups[key]
 	end
 
-	local group = builder.create(bagID, slotID)
+	local group = builder:create(bagID, slotID)
 
-	builder.addTo(groupLayout, group)
+	builder:addTo(groupLayout, group)
 	groups[key] = group
 
 	return group
