@@ -9,5 +9,6 @@ config.lua
 initialise.lua
 
 builders.lua
+builders\itemBuilder.lua
 
 run.lua

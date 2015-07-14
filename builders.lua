@@ -5,6 +5,14 @@ local style = Darker.style
 
 local defaultBuilder = {
 
+	new = function(self)
+		return setmetatable({}, { __index = self})
+	end,
+
+	extend = function(self, other)
+		return setmetatable(other, { __index = self})
+	end,
+
 	key = function(self, bagID, slotID)
 		return bagID
 	end,
@@ -62,6 +70,8 @@ ns.builders = {
 
 	builders = {},
 
+	defaultBuilder = defaultBuilder,
+
 	get = function(self, bagID, slotID)
 		for i, set in ipairs(self.builders) do
 			if set:condition(bagID, slotID) then
@@ -71,7 +81,7 @@ ns.builders = {
 	end,
 
 	add = function(self, builder)
-		table.insert(self.builders, setmetatable(builder, { __index = defaultBuilder }))
+		table.insert(self.builders, builder)
 	end,
 
 }

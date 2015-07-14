@@ -1,31 +1,8 @@
 local addon, ns = ...
 
-ns.builders:add({
-	key = function(self, bagID, slotID)
-		return "Hyper"
-	end,
-	condition = function(self, bagID, slotID)
+ns.builders:add(ns.builders.itemBuilder:new("Hyper Augment Rune"))
+ns.builders:add(ns.builders.defaultBuilder:new())
 
-		local texture, count, locked, quality, readable, lootable, link = GetContainerItemInfo(bagID, slotID)
-
-		if not link then
-			return false
-		end
-
-		local name = GetItemInfo(link)
-
-		return name == "Hyper Augment Rune"
-	end,
-	create = function(self, bagID, slotID)
-		return self:createGroup("Hyper")
-	end,
-	addTo = function(self, collection, frame)
-		table.insert(collection, 1, frame)
-	end,
-
-})
-
-ns.builders:add({})
 
 local groups = {}
 local groupLayout = {}
@@ -103,3 +80,5 @@ local runOnce = function()
 end
 
 hooksecurefunc("ToggleAllBags", runOnce)
+
+Dark.container = ns
