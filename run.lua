@@ -114,10 +114,6 @@ local run = function()
 
 end
 
-local runOnce = function()
-	run()
-end
-
-hooksecurefunc("ToggleAllBags", runOnce)
+hooksecurefunc("ToggleAllBags", run)
 
 Dark.container = ns
