@@ -1,5 +1,7 @@
 local addon, ns = ...
 
+local style = ns.lib.style
+
 ns.builders:add(ns.builders.itemBuilder:new("Hyper Augment Rune"))
 ns.builders:add(ns.builders.defaultBuilder:new())
 
@@ -31,6 +33,42 @@ local getGroup = function(bagID, slotID)
 
 end
 
+local styleButton = function(button)
+
+	if button.styledAlready then
+		return
+	end
+
+	local count = button.Count
+	local icon = button.icon
+	local cooldown = _G[button:GetName() .."Cooldown"]
+
+	button:SetPushedTexture("")
+	button:SetNormalTexture("")
+
+	button:ClearAllPoints()
+	button:SetSize(24, 24)
+
+	style:border(button)
+
+	button.IconBorder:SetTexture(nil)
+	button.IconBorder:Hide()
+
+	button.BattlepayItemTexture:SetTexture(nil)
+	button.BattlepayItemTexture:Hide()
+	button:Show()
+
+	count:ClearAllPoints()
+	count:SetPoint("BottomRight")
+	count:Show()
+
+	icon:SetAllPoints(button)
+	icon:SetTexCoord(.08, .92, .08, .92)
+
+	button.styledAlready = true
+
+end
+
 local run = function()
 
 	for k, group in pairs(groups) do
@@ -51,6 +89,7 @@ local run = function()
 			cell.ClearAllPoints = function() end
 			cell.SetPoint = function() end
 
+			styleButton(cell)
 			getGroup(bagID, slotID):add(cell)
 
 		end
